@@ -1,0 +1,6 @@
+fhir-server:
+  enabled: True
+  url: http://localhost:4080/
+data-generation:
+  number-of-patients: 1
+  dumb-locally: False
