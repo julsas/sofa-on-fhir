@@ -10,6 +10,7 @@ Python script that generates some of the data needed to compute the SOFA-score i
     * Platelets
     * Creatinine
     * Glasgow Coma Scale (GCS)
+
 Plus there is a MedicationStatement resource for adminisration of dopamine. There is some randomization implemented in creating the measurement values.
 
 The SOFA-Score is based on the publication *Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ dysfunction/failure. On behalf of the Working Group on Sepsis-Related Problems of the European Society of Intensive Care Medicine. Intensive Care Med. 1996;22(7):707-710. doi:10.1007/BF01709751*
@@ -21,7 +22,7 @@ The SOFA-Score is based on the publication *Vincent JL, Moreno R, Takala J, et a
 ## Usage
 * Adjust the settings.yaml for your needs
     * if you are using a FHIR-server, specify the url and set to enabled
-    * number of patients is the amount of data to be genrated
+    * number of patients is the amount of data to be generated
     * all resources can be dumbed to the local data folder if enabled
 * Run sofa-on-fhir.py
 
