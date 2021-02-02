@@ -1,3 +1,4 @@
+from app.Condition import create_dependence_on_ventilator
 from app.Bundle import create_bundle
 from app.MedicationStatement import create_dopamine
 from app.Patient import create_patient, random_birth_date
@@ -22,6 +23,7 @@ fhir_server_enabled = settings['fhir-server']['enabled']
 fhir_server_url = settings['fhir-server']['url']
 number_of_patients = settings['data-generation']['number-of-patients']
 local_output = settings['data-generation']['dumb-locally']
+dependence_on_ventilator = settings['data-generation']['dependence-on-ventilator']
 
 fhir_server = str(fhir_server_url)
 headers = {
@@ -228,6 +230,21 @@ while i < number_of_patients:
         fname = 'MedicationStatement-dopamine-' + str(dopa.id) + '.json'
         with open('data/' + fname, 'w') as outfile:
             json.dump(dopa.as_json(), outfile, indent=4)
+        print("json written to file {fn}".format(fn=fname))
+
+    # Dependence on ventilator
+    dependence = create_dependence_on_ventilator(
+        patId=str(patient.id),
+        present=dependence_on_ventilator,
+        recordedDate=dateTime
+    )
+
+    if local_output == False:
+        pass
+    else:
+        fname = 'Condition-dependence-on-ventilator-' + str(dependence.id) + '.json'
+        with open('data/' + fname, 'w') as outfile:
+            json.dump(dependence.as_json(), outfile, indent=4)
         print("json written to file {fn}".format(fn=fname))
 
     bundle_entries = []
