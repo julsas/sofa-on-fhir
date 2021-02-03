@@ -1,7 +1,7 @@
 fhir-server:
-  enabled: False
+  enabled: True
   url: http://localhost:4080/
 data-generation:
-  number-of-patients: 1
-  dumb-locally: True
-  dependence-on-ventilator: False
+  number-of-patients: 100
+  dumb-locally: False
+  dependence-on-ventilator: True

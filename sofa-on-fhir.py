@@ -1,8 +1,9 @@
+from app.Procedure import create_vasopressor_therapy
 from app.Condition import create_dependence_on_ventilator
 from app.Bundle import create_bundle
-from app.MedicationStatement import create_dopamine
+from app.MedicationStatement import create_adrenaline, create_dopamine, create_noradrenaline
 from app.Patient import create_patient, random_birth_date
-from app.Observation import create_bilirubin, create_body_weight, create_creatinine, create_glasgow_coma_scale, create_inhaled_oxygen_concentration, create_mean_blood_pressure, create_oxygen_partial_pressure, create_platelets
+from app.Observation import create_bilirubin, create_body_weight, create_creatinine, create_glasgow_coma_scale, create_inhaled_oxygen_concentration, create_mean_blood_pressure, create_oxygen_partial_pressure, create_platelets, create_urine_output
 from app import Request, Entry
 import datetime
 import json
@@ -213,24 +214,114 @@ while i < number_of_patients:
             json.dump(map.as_json(), outfile, indent=4)
         print("json written to file {fn}".format(fn=fname))
 
-    # Dopamine
-    rateRatioNumeratorValues = [5, 10, 20]
-    rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
-    dopa = create_dopamine(
+    # 24h Urine
+    valueUrine = random.uniform(0.1, 2.0)
+    valueUrine = round(valueUrine, 1)
+    urine = create_urine_output(
         patId=str(patient.id),
         effectiveDateTime=dateTime,
-        rateRatioNumeratorValue=rateRatioNumeratorValue
+        value=valueUrine
     )
 
-    resources.append(dopa)
+    resources.append(urine)
 
     if local_output == False:
         pass
     else:
-        fname = 'MedicationStatement-dopamine-' + str(dopa.id) + '.json'
+        fname = 'Observation-urine-output-24h-' + str(urine.id) + '.json'
         with open('data/' + fname, 'w') as outfile:
-            json.dump(dopa.as_json(), outfile, indent=4)
+            json.dump(urine.as_json(), outfile, indent=4)
         print("json written to file {fn}".format(fn=fname))
+
+    # Vasopressors
+    presences = [True, False]
+    presence = random.choice(presences)
+    if presence == False:
+        pass
+    else:
+
+        vasopressor_therapy = create_vasopressor_therapy(
+            patId=str(patient.id),
+            performedDateTime=dateTime
+        )
+
+        resources.append(vasopressor_therapy)
+
+        if local_output == False:
+            pass
+        else:
+            fname = 'Procedure-vasopressor-therapy-' + str(vasopressor_therapy.id) + '.json'
+            with open('data/' + fname, 'w') as outfile:
+                json.dump(vasopressor_therapy.as_json(), outfile, indent=4)
+            print("json written to file {fn}".format(fn=fname))
+
+        dopamine_presences = [True, False]
+        dopamine_presence = random.choice(dopamine_presences)
+        if dopamine_presence == True:
+            rateRatioNumeratorValues = [5, 10, 20]
+            rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
+            rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
+            dopa = create_dopamine(
+                patId=str(patient.id),
+                partOf=str(vasopressor_therapy.id),
+                effectiveDateTime=dateTime,
+                rateRatioNumeratorValue=rateRatioNumeratorValue
+            )
+
+            resources.append(dopa)
+
+            if local_output == False:
+                pass
+            else:
+                fname = 'MedicationStatement-dopamine-' + str(dopa.id) + '.json'
+                with open('data/' + fname, 'w') as outfile:
+                    json.dump(dopa.as_json(), outfile, indent=4)
+                print("json written to file {fn}".format(fn=fname))
+        
+        elif dopamine_presence == False:
+            adrenaline_presences = [True, False]
+            adrenaline_presence = random.choice(adrenaline_presences)
+
+            rateRatioNumeratorValues = [0.1, 0.2, 0.3]
+            rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
+            rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
+            adre = create_adrenaline(
+                patId=str(patient.id),
+                partOf=str(vasopressor_therapy.id),
+                effectiveDateTime=dateTime,
+                rateRatioNumeratorValue=rateRatioNumeratorValue
+            )
+
+            resources.append(adre)
+
+            if local_output == False:
+                pass
+            else:
+                fname = 'MedicationStatement-adrenaline-' + str(adre.id) + '.json'
+                with open('data/' + fname, 'w') as outfile:
+                    json.dump(adre.as_json(), outfile, indent=4)
+                print("json written to file {fn}".format(fn=fname))
+
+        elif dopamine_presence == False and adrenaline_presence == False:
+            rateRatioNumeratorValues = [0.1, 0.2, 0.3]
+            rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
+            rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
+            nora = create_noradrenaline(
+                patId=str(patient.id),
+                partOf=str(vasopressor_therapy.id),
+                effectiveDateTime=dateTime,
+                rateRatioNumeratorValue=rateRatioNumeratorValue
+            )
+
+            resources.append(nora)
+
+            if local_output == False:
+                pass
+            else:
+                fname = 'MedicationStatement-noradrenaline-' + str(nora.id) + '.json'
+                with open('data/' + fname, 'w') as outfile:
+                    json.dump(nora.as_json(), outfile, indent=4)
+                print("json written to file {fn}".format(fn=fname))
 
     # Dependence on ventilator
     dependence = create_dependence_on_ventilator(
@@ -247,11 +338,16 @@ while i < number_of_patients:
             json.dump(dependence.as_json(), outfile, indent=4)
         print("json written to file {fn}".format(fn=fname))
 
+    resources.append(dependence)
+
     bundle_entries = []
     for resource in resources:
         full_url = 'urn:uuid:' + str(resource.id)
         resource = resource
         if resource.resource_type == 'Patient':
+            req_method = 'PUT'
+            req_url = str(resource.resource_type) + '/' + str(resource.id)
+        elif resource.resource_type == 'Procedure':
             req_method = 'PUT'
             req_url = str(resource.resource_type) + '/' + str(resource.id)
         else:

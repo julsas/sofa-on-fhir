@@ -809,3 +809,80 @@ def create_mean_blood_pressure(patId, effectiveDateTime, value):
     observation = observation.to_fhir()
     
     return observation
+
+# Creatinine
+def create_urine_output(patId, effectiveDateTime, value):
+    
+    resourceId = uuid.uuid4()
+
+    profile = ['https://www.medizininformatik-initiative.de/fhir/core/modul-labor/StructureDefinition/ObservationLab']
+
+    idfTypeSystem = 'http://terminology.hl7.org/CodeSystem/v2-0203'
+    idfTypeCode = 'OBI'
+    idfTypeCoding = Coding.Coding(system=idfTypeSystem, version=None, code=idfTypeCode, display=None)
+    idfTypeCoding = [idfTypeCoding.to_fhir()]
+    idfType = CodeableConcept.CodeableConcept(coding=idfTypeCoding, text=None, extension=None)
+    idfType = idfType.to_fhir()
+    idfSystem = 'https://www.charite.de/fhir/CodeSystem/lab-identifiers'
+    idfCode = '3167-4_Urine24h'
+    idfAssigner = 'Charité'
+    obsIdentifier = Identifier.Identifier(use=None, idfType=idfType, system=idfSystem, value=idfCode, period=None, assigner=idfAssigner)
+    obsIdentifier = [obsIdentifier.to_fhir()]
+
+    obsStatus = 'final'
+
+    categoryLoincSystem = 'http://loinc.org'
+    categoryLoincCode = '26436-6'
+    categoryLoincCoding = Coding.Coding(system=categoryLoincSystem, version=None, code=categoryLoincCode, display=None)
+    categoryLoincCoding = categoryLoincCoding.to_fhir()
+    categoryObsSystem = 'http://terminology.hl7.org/CodeSystem/observation-category'
+    categoryObsCode = 'laboratory'
+    categoryObsCoding = Coding.Coding(system=categoryObsSystem, version=None, code=categoryObsCode, display=None)
+    categoryObsCoding = categoryObsCoding.to_fhir()
+    obsCategory = CodeableConcept.CodeableConcept(coding=[categoryLoincCoding, categoryObsCoding], text=None, extension=None)
+    obsCategory = obsCategory.to_fhir()
+
+    obsCodeSystem = 'http://loinc.org'
+    obsCodeCode = '3167-4'
+    obsCodeDisplay = 'Volume of 24 hour Urine'
+    obsCodeCoding = Coding.Coding(system=obsCodeSystem, version=None, code=obsCodeCode, display=obsCodeDisplay)
+    obsCodeCoding = [obsCodeCoding.to_fhir()]
+    obsCodeText = 'Sammelurin 24h'
+    obsCode = CodeableConcept.CodeableConcept(coding=obsCodeCoding, text=obsCodeText, extension=None)
+    obsCode = obsCode.to_fhir()
+
+    subject = patId
+
+    effectiveDate = effectiveDateTime
+
+    obsValueQuantityValue = value
+    obsValueQuantityUnit = 'L'
+    obsValueQuantitySystem = 'http://unitsofmeasure.org'
+    obsValueQuantityCode = 'L'
+    obsValueQuantity = Quantity.Quantity(value=obsValueQuantityValue, comparator=None, unit=obsValueQuantityUnit, system=obsValueQuantitySystem, code=obsValueQuantityCode)
+    obsValueQuantity = obsValueQuantity.to_fhir()
+
+    observation = Observation(
+        resourceId=resourceId,
+        profile=profile,
+        identifier=obsIdentifier,
+        status=obsStatus,
+        category=obsCategory,
+        code=obsCode,
+        subject=subject,
+        effectiveDate=effectiveDate,
+        valueQuantity=obsValueQuantity,
+        valueCodeableConcept=None,
+        valueInteger=None,
+        dataAbsentReason=None,
+        interpretation=None,
+        note=None,
+        bodySite=None,
+        method=None,
+        referenceRange=None,
+        member=None,
+        component=None)
+
+    observation = observation.to_fhir()
+
+    return observation
