@@ -255,9 +255,10 @@ while i < number_of_patients:
                 json.dump(vasopressor_therapy.as_json(), outfile, indent=4)
             print("json written to file {fn}".format(fn=fname))
 
-        dopamine_presences = [True, False]
-        dopamine_presence = random.choice(dopamine_presences)
-        if dopamine_presence == True:
+        vasopressor_presences = ['dopamine', 'adrenaline', 'noradrenaline']
+        vasopressor_presences = random.choice(vasopressor_presences)
+
+        if vasopressor_presences == 'dopamine':
             rateRatioNumeratorValues = [5, 10, 20]
             rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
             rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
@@ -278,10 +279,7 @@ while i < number_of_patients:
                     json.dump(dopa.as_json(), outfile, indent=4)
                 print("json written to file {fn}".format(fn=fname))
         
-        elif dopamine_presence == False:
-            adrenaline_presences = [True, False]
-            adrenaline_presence = random.choice(adrenaline_presences)
-
+        elif vasopressor_presences == 'adrenaline':
             rateRatioNumeratorValues = [0.1, 0.2, 0.3]
             rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
             rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
@@ -302,7 +300,7 @@ while i < number_of_patients:
                     json.dump(adre.as_json(), outfile, indent=4)
                 print("json written to file {fn}".format(fn=fname))
 
-        elif dopamine_presence == False and adrenaline_presence == False:
+        elif vasopressor_presences == 'noradrenaline':
             rateRatioNumeratorValues = [0.1, 0.2, 0.3]
             rateRatioNumeratorValue = random.choice(rateRatioNumeratorValues)
             rateRatioNumeratorValue = (rateRatioNumeratorValue*valueWeight)
