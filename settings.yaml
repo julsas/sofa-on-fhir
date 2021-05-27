@@ -1,7 +1,7 @@
 fhir-server:
   enabled: True
-  url: http://localhost:4080/
+  url: https://hdp-fhir-dev-pub.charite.de/
 data-generation:
-  number-of-patients: 100
-  dumb-locally: False
+  number-of-patients: 1
+  dumb-locally: True
   dependence-on-ventilator: True

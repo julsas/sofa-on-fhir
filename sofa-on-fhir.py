@@ -29,7 +29,7 @@ dependence_on_ventilator = settings['data-generation']['dependence-on-ventilator
 fhir_server = str(fhir_server_url)
 headers = {
     'Accept':'application/fhir+json; fhirVersion=4.0',
-    'Content-Type':'application/fhir+json; fhirVersion=4.0'
+    'Content-Type':'application/fhir+json; fhirVersion=4.0',
     }
 
 
